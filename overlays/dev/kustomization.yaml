@@ -1,9 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../base
+- ../../base
 images:
-  - name: ghcr.io/pushkal-vashishtha/secureshop-api
-    digest: sha256:6a2d220e73ddced26b142ff8445628357646c766a46b96a8aa3a5978b6cfb40a
-  - name: ghcr.io/pushkal-vashishtha/secureshop-web
-    digest: sha256:67bf224ee3dea8c51061a9b70dafc86fdc5dafdec08971424b0515f3d6374fe3
+- digest: sha256:87fc96794cd6a0a755de1806285e7975e7f597e0bf37a85cc6d437ad97ff08c0
+  name: ghcr.io/pushkal-vashishtha/secureshop-api
+  newName: ghcr.io/pushkal-vashishtha/secureshop-api
+- digest: sha256:23b7285599918cece8423682e0a092a7278b39430cf557177c20228ba1ec5b4f
+  name: ghcr.io/pushkal-vashishtha/secureshop-web
+  newName: ghcr.io/pushkal-vashishtha/secureshop-web
