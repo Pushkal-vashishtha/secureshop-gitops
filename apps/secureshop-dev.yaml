@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: secureshop-dev
+  namespace: argocd
+spec:
+  project: secureshop
+  source:
+    repoURL: https://github.com/Pushkal-vashishtha/secureshop-gitops.git
+    targetRevision: main
+    path: overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: secureshop
+  namespace: argocd
+spec:
+  description: SecureShop workloads
+  sourceRepos:
+    - https://github.com/Pushkal-vashishtha/secureshop-gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: web
+    - server: https://kubernetes.default.svc
+      namespace: app
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
