@@ -4,3 +4,4 @@ resources:
   - namespaces.yaml
   - api.yaml
   - web.yaml
+  - netpol.yaml
