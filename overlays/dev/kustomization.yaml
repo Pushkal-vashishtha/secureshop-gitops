@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - ../../base
+- ingress.yaml
 images:
 - digest: sha256:87fc96794cd6a0a755de1806285e7975e7f597e0bf37a85cc6d437ad97ff08c0
   name: ghcr.io/pushkal-vashishtha/secureshop-api
