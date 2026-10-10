@@ -17,4 +17,4 @@ patches:
     patch: |-
       - op: replace
         path: /spec/template/spec/containers/0/image
-        value: ghcr.io/pushkal-vashishtha/secureshop-web:latest
+        value: docker.io/library/nginx:latest
