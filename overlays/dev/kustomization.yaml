@@ -4,9 +4,9 @@ resources:
 - ../../base
 - ingress.yaml
 images:
-- digest: sha256:87fc96794cd6a0a755de1806285e7975e7f597e0bf37a85cc6d437ad97ff08c0
+- digest: sha256:d68c49c17120e887908781318d9ff022316c371134d378a2027d6e9990802a29
   name: ghcr.io/pushkal-vashishtha/secureshop-api
   newName: ghcr.io/pushkal-vashishtha/secureshop-api
-- digest: sha256:23b7285599918cece8423682e0a092a7278b39430cf557177c20228ba1ec5b4f
+- digest: sha256:99cd8e6c89372cbcd34ead85fbde45f9a584ec03cfa8bf43a165f405b8c91fee
   name: ghcr.io/pushkal-vashishtha/secureshop-web
   newName: ghcr.io/pushkal-vashishtha/secureshop-web
