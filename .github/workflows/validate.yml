@@ -1,0 +1,40 @@
+name: gitops-validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  GATOR_VER: v3.23.1
+  GATOR_SHA256: c268d7b809c9fe59a110ab0bf7c296ab00b0b6c894c209cd15e94194590291bb
+  KC_VER: v0.8.0
+  KC_SHA256: 9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install pinned, checksum-verified tools
+        run: |
+          curl -fsSL -o gator.tgz "https://github.com/open-policy-agent/gatekeeper/releases/download/${GATOR_VER}/gator-${GATOR_VER}-linux-amd64.tar.gz"
+          echo "${GATOR_SHA256}  gator.tgz" | sha256sum -c -
+          curl -fsSL -o kc.tgz "https://github.com/yannh/kubeconform/releases/download/${KC_VER}/kubeconform-linux-amd64.tar.gz"
+          echo "${KC_SHA256}  kc.tgz" | sha256sum -c -
+          tar -xzf gator.tgz gator && tar -xzf kc.tgz kubeconform
+          sudo install gator kubeconform /usr/local/bin/
+
+      - name: Render the dev overlay
+        run: kubectl kustomize overlays/dev > rendered.yaml
+
+      - name: Schema check (kubeconform)
+        run: kubeconform -strict -summary rendered.yaml
+
+      - name: Policy check (gator, same policies as the cluster)
+        run: gator test -f rendered.yaml -f platform/gatekeeper/
