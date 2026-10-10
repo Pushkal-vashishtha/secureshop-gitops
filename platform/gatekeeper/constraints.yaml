@@ -1,0 +1,67 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedRepos
+metadata:
+  name: secureshop-ghcr-only
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces: ["web", "app"]
+    labelSelector:
+      matchExpressions:
+        - key: acme.cert-manager.io/http01-solver
+          operator: DoesNotExist
+  parameters:
+    repos:
+      - "ghcr.io/pushkal-vashishtha/"
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDisallowedTags
+metadata:
+  name: no-latest-tag
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces: ["web", "app"]
+    labelSelector:
+      matchExpressions:
+        - key: acme.cert-manager.io/http01-solver
+          operator: DoesNotExist
+  parameters:
+    tags: ["latest"]
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequireImageDigest
+metadata:
+  name: images-by-digest
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces: ["web", "app"]
+    labelSelector:
+      matchExpressions:
+        - key: acme.cert-manager.io/http01-solver
+          operator: DoesNotExist
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: deployments-need-tier
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment"]
+    namespaces: ["web", "app"]
+  parameters:
+    labels:
+      - key: tier
