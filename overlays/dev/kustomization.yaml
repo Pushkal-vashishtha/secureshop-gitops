@@ -10,3 +10,11 @@ images:
 - digest: sha256:99cd8e6c89372cbcd34ead85fbde45f9a584ec03cfa8bf43a165f405b8c91fee
   name: ghcr.io/pushkal-vashishtha/secureshop-web
   newName: ghcr.io/pushkal-vashishtha/secureshop-web
+patches:
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: ghcr.io/pushkal-vashishtha/secureshop-web:latest
