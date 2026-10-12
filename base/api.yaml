@@ -30,7 +30,11 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
+          type: RuntimeDefault
+        appArmorProfile:
           type: RuntimeDefault
       containers:
         - name: api
@@ -49,6 +53,7 @@ spec:
               memory: 64Mi
             limits:
               memory: 256Mi
+              cpu: 500m
           readinessProbe:
             httpGet:
               path: /healthz
