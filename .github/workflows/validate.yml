@@ -41,9 +41,16 @@ jobs:
       - name: Policy check (gator, same policies as the cluster)
         run: gator test -f rendered.yaml -f platform/gatekeeper/
 
-      - name: Posture check (Kubescape, fail on high or critical)
+      - name: Posture check (Kubescape; block high/critical unless documented exception)
         run: |
           curl -fsSL -o kubescape "https://github.com/kubescape/kubescape/releases/download/${KS_VER}/kubescape_${KS_VER#v}_linux_amd64"
           echo "${KS_SHA256}  kubescape" | sha256sum -c -
           chmod +x kubescape
-          ./kubescape scan rendered.yaml --severity-threshold high --exceptions .kubescape/exceptions.json --format pretty-printer
+          ./kubescape scan rendered.yaml --exceptions .kubescape/exceptions.json --format pretty-printer || true
+          ./kubescape scan rendered.yaml --exceptions .kubescape/exceptions.json --format json --output ks.json > /dev/null 2>&1
+          jq -r '.summaryDetails.controls | to_entries[]
+            | select(.value.statusInfo.status=="failed" and .value.scoreFactor>=7
+                     and (.value.statusInfo.subStatus // "") != "w/exceptions")
+            | "\(.key)  \(.value.name)  score=\(.value.scoreFactor)"' ks.json > blocking.txt
+          if [ -s blocking.txt ]; then echo "Blocking findings:"; cat blocking.txt; exit 1; fi
+          echo "No high/critical findings without a documented exception."
