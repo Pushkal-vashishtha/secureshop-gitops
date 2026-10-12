@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-secureshop-signatures
+  annotations:
+    policies.kyverno.io/description: >-
+      Images from our registry must be signed by app-ci on main
+      (keyless Cosign, GitHub OIDC, logged in Rekor).
+spec:
+  background: false
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: require-ci-signature
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+              namespaces: ["web", "app"]
+      verifyImages:
+        - imageReferences:
+            - "ghcr.io/pushkal-vashishtha/*"
+          failureAction: Enforce
+          mutateDigest: false
+          verifyDigest: true
+          required: true
+          attestors:
+            - entries:
+                - keyless:
+                    subject: "https://github.com/Pushkal-vashishtha/secureshop-app/.github/workflows/ci.yml@refs/heads/main"
+                    issuer: "https://token.actions.githubusercontent.com"
+                    rekor:
+                      url: https://rekor.sigstore.dev
