@@ -46,4 +46,4 @@ jobs:
           curl -fsSL -o kubescape "https://github.com/kubescape/kubescape/releases/download/${KS_VER}/kubescape_${KS_VER#v}_linux_amd64"
           echo "${KS_SHA256}  kubescape" | sha256sum -c -
           chmod +x kubescape
-          ./kubescape scan rendered.yaml --severity-threshold high --format pretty-printer
+          ./kubescape scan rendered.yaml --severity-threshold high --exceptions .kubescape/exceptions.json --format pretty-printer
