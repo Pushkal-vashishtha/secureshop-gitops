@@ -1,0 +1,31 @@
+[
+  {
+    "name": "c0211-selinux-not-applicable",
+    "policyType": "postureExceptionPolicy",
+    "actions": [
+      "alertOnly"
+    ],
+    "reason": "Only seLinuxOptions fails C-0211. Nodes run Ubuntu with AppArmor, not SELinux; appArmorProfile RuntimeDefault is set explicitly. Other C-0211 fields are enforced at admission by Pod Security 'restricted'.",
+    "resources": [
+      {
+        "designatorType": "Attributes",
+        "attributes": {
+          "kind": "Deployment",
+          "name": "web"
+        }
+      },
+      {
+        "designatorType": "Attributes",
+        "attributes": {
+          "kind": "Deployment",
+          "name": "api"
+        }
+      }
+    ],
+    "posturePolicies": [
+      {
+        "controlID": "C-0211"
+      }
+    ]
+  }
+]
