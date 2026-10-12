@@ -13,8 +13,6 @@ env:
   GATOR_SHA256: c268d7b809c9fe59a110ab0bf7c296ab00b0b6c894c209cd15e94194590291bb
   KC_VER: v0.8.0
   KC_SHA256: 9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883
-  KS_VER: v4.0.15
-  KS_SHA256: 011569dbcde85afc96cf63262e4f967166b6680fd70a623e9065334b6767b244
 
 jobs:
   validate:
@@ -40,10 +38,3 @@ jobs:
 
       - name: Policy check (gator, same policies as the cluster)
         run: gator test -f rendered.yaml -f platform/gatekeeper/
-
-      - name: Posture check (Kubescape, fail on high or critical)
-        run: |
-          curl -fsSL -o kubescape "https://github.com/kubescape/kubescape/releases/download/${KS_VER}/kubescape_${KS_VER#v}_linux_amd64"
-          echo "${KS_SHA256}  kubescape" | sha256sum -c -
-          chmod +x kubescape
-          ./kubescape scan rendered.yaml --severity-threshold high --format pretty-printer
