@@ -5,3 +5,4 @@ resources:
   - api.yaml
   - web.yaml
   - netpol.yaml
+  - serviceaccounts.yaml
