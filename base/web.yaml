@@ -17,6 +17,7 @@ spec:
         app: web
         tier: web
     spec:
+      serviceAccountName: web
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
