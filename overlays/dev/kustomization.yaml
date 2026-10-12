@@ -10,3 +10,13 @@ images:
 - digest: sha256:99cd8e6c89372cbcd34ead85fbde45f9a584ec03cfa8bf43a165f405b8c91fee
   name: ghcr.io/pushkal-vashishtha/secureshop-web
   newName: ghcr.io/pushkal-vashishtha/secureshop-web
+# ruleset test
+
+patches:
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: docker.io/library/nginx:latest
