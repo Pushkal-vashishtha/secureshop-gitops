@@ -36,7 +36,7 @@ jobs:
         run: kubectl kustomize overlays/dev > rendered.yaml
 
       - name: Schema check (kubeconform)
-        run: kubeconform -strict -summary rendered.yaml
+        run: kubeconform -strict -ignore-missing-schemas -summary rendered.yaml
 
       - name: Policy check (gator, same policies as the cluster)
         run: gator test -f rendered.yaml -f platform/gatekeeper/

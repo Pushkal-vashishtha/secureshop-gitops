@@ -6,3 +6,4 @@ resources:
   - web.yaml
   - netpol.yaml
   - serviceaccounts.yaml
+  - externalsecret.yaml
