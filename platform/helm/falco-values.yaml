@@ -1,0 +1,22 @@
+driver:
+  kind: modern_ebpf       # no kernel module to build; needs a recent kernel (yours: 7.0)
+tty: true                 # flush output immediately, so `kubectl logs` shows alerts in real time
+falco:
+  json_output: true       # machine-readable alerts (for Day 18's log shipping)
+  json_include_output_property: true
+customRules:
+  secureshop-rules.yaml: |-
+    - rule: Shell in SecureShop workload
+      desc: >
+        Any shell started inside the web or app namespaces, with or without a terminal.
+        The stock rule needs a terminal; a remote-code-execution exploit has none.
+        The api image has no shell at all; web only runs shells in its entrypoint.
+      condition: >
+        spawned_process and container
+        and k8s.ns.name in (web, app)
+        and proc.name in (shell_binaries)
+      output: >
+        Shell in SecureShop workload (ns=%k8s.ns.name pod=%k8s.pod.name
+        cmd=%proc.cmdline parent=%proc.pname user=%user.name image=%container.image.repository)
+      priority: CRITICAL
+      tags: [secureshop, mitre_execution, T1059]
