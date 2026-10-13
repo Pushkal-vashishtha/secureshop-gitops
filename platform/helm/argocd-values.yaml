@@ -3,6 +3,7 @@ dex:
 notifications:
   enabled: false
 redis:
+  automountServiceAccountToken: false
   serviceAccount:
     create: true
     automountServiceAccountToken: false
