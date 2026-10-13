@@ -19,8 +19,10 @@ install cert-manager cert-manager       jetstack/cert-manager  v1.21.2
 install argocd       argocd             argo/argo-cd           10.10.0
 install gatekeeper   gatekeeper-system  gatekeeper/gatekeeper  3.23.1
 install kyverno      kyverno            kyverno/kyverno        3.9.1
+install external-secrets external-secrets external-secrets/external-secrets 2.12.0
 
 echo "== 3. Platform configuration and policies"
+kubectl apply -f imds-guard.yaml
 kubectl apply -f cluster-issuers.yaml
 kubectl apply -f gatekeeper/templates/
 echo "   waiting for Gatekeeper to create the constraint types..."
@@ -30,6 +32,7 @@ done
 kubectl apply -f gatekeeper/expansion.yaml
 kubectl apply -f gatekeeper/constraints.yaml
 kubectl apply -f kyverno/
+kubectl apply -f external-secrets/
 
 echo "== 4. Hand the app over to ArgoCD"
 kubectl apply -f ../apps/project.yaml -f ../apps/secureshop-dev.yaml

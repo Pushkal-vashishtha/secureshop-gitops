@@ -39,6 +39,14 @@ spec:
       containers:
         - name: api
           image: ghcr.io/pushkal-vashishtha/secureshop-api
+          env:
+            - name: DB_HOST
+              value: secureshop-db.cdck8k6qc8ks.ap-south-1.rds.amazonaws.com
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: DB_PASSWORD
           ports:
             - name: http
               containerPort: 8080
