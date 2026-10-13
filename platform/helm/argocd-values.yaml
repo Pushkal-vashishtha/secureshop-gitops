@@ -1,0 +1,8 @@
+dex:
+  enabled: false
+notifications:
+  enabled: false
+redis:
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false
