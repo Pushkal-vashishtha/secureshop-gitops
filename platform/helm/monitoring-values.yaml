@@ -1,0 +1,33 @@
+# kube-prometheus-stack, trimmed for a single 8 GB k3s node.
+# k3s runs the control-plane components inside one binary, so their
+# separate scrape targets don't exist: switch them off instead of alerting on them.
+kubeEtcd: {enabled: false}
+kubeControllerManager: {enabled: false}
+kubeScheduler: {enabled: false}
+kubeProxy: {enabled: false}
+defaultRules:
+  rules:
+    etcd: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeProxy: false
+prometheus:
+  prometheusSpec:
+    retention: 3d
+    retentionSize: 2GB
+    resources: {requests: {cpu: 100m, memory: 400Mi}, limits: {memory: 1Gi}}
+    # pick up ServiceMonitors and rules from every namespace, not only this release's
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+alertmanager:
+  alertmanagerSpec:
+    resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 128Mi}}
+    configSecret: alertmanager-config   # config built by ESO from Parameter Store
+grafana:
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+  resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {memory: 384Mi}}

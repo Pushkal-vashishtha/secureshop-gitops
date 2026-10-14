@@ -1,0 +1,22 @@
+# Grafana's admin login, from Parameter Store (never the chart default).
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: grafana-admin
+  namespace: monitoring
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: aws-parameter-store
+  target:
+    name: grafana-admin
+    creationPolicy: Owner
+    template:
+      data:
+        admin-user: admin
+        admin-password: "{{ .password }}"
+  data:
+    - secretKey: password
+      remoteRef:
+        key: /secureshop/dev/monitoring/grafana_admin_password

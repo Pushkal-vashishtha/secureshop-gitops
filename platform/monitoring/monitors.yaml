@@ -1,0 +1,37 @@
+# What Prometheus scrapes beyond the cluster defaults: the security components.
+# Selectors use exact labels discovered on the live objects; a wrong selector scrapes nothing, silently.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: {name: cert-manager, namespace: monitoring}
+spec:
+  namespaceSelector: {matchNames: [cert-manager]}
+  selector:
+    matchLabels: {app.kubernetes.io/name: cert-manager, app.kubernetes.io/component: controller}
+  endpoints: [{port: http-metrics, interval: 60s}]
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: {name: kyverno-admission, namespace: monitoring}
+spec:
+  namespaceSelector: {matchNames: [kyverno]}
+  selector:
+    matchLabels: {app.kubernetes.io/name: kyverno-admission-controller}
+  endpoints: [{port: metrics-port, interval: 60s}]
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata: {name: external-secrets, namespace: monitoring}
+spec:
+  namespaceSelector: {matchNames: [external-secrets]}
+  selector:
+    matchLabels: {app.kubernetes.io/name: external-secrets}
+  podMetricsEndpoints: [{port: metrics, interval: 60s}]
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata: {name: falco, namespace: monitoring}
+spec:
+  namespaceSelector: {matchNames: [falco]}
+  selector:
+    matchLabels: {app.kubernetes.io/name: falco}
+  endpoints: [{port: metrics, interval: 30s}]

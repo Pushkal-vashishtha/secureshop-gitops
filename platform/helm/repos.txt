@@ -4,3 +4,4 @@ gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
 kyverno https://kyverno.github.io/kyverno/
 external-secrets https://charts.external-secrets.io
 falcosecurity https://falcosecurity.github.io/charts
+prometheus-community https://prometheus-community.github.io/helm-charts
