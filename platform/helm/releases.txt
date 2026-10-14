@@ -4,3 +4,4 @@ gatekeeper gatekeeper-system gatekeeper-3.23.1
 kyverno kyverno kyverno-3.9.1
 external-secrets external-secrets external-secrets-2.12.0
 falco falco falco-9.2.0
+monitoring monitoring kube-prometheus-stack-92.3.1

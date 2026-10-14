@@ -20,3 +20,6 @@ customRules:
         cmd=%proc.cmdline parent=%proc.pname user=%user.name image=%container.image.repository)
       priority: CRITICAL
       tags: [secureshop, mitre_execution, T1059]
+metrics:
+  enabled: true                 # Prometheus endpoint on Falco's web server
+  rulesCountersEnabled: true    # a counter per rule and priority: what we alert on

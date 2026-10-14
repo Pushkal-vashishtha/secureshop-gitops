@@ -1,0 +1,50 @@
+# SecureShop security alerts. Counters that only appear at their first event
+# (Falco rules, Kyverno denials) are handled with "or ... unless ... offset":
+# a series that exists now but didn't 5 minutes ago also counts as an increase.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata: {name: secureshop-security, namespace: monitoring}
+spec:
+  groups:
+    - name: secureshop-security
+      rules:
+        - alert: FalcoCriticalEvent
+          expr: |
+            sum by (rule_name) (increase(falcosecurity_falco_rules_matches_total{priority=~"0|1|2"}[5m])) > 0
+            or
+            sum by (rule_name) (falcosecurity_falco_rules_matches_total{priority=~"0|1|2"}
+              unless falcosecurity_falco_rules_matches_total{priority=~"0|1|2"} offset 5m) > 0
+          labels: {severity: critical}
+          annotations:
+            summary: "Falco critical: {{ $labels.rule_name }}"
+            description: "A Critical-or-worse Falco rule matched in the last 5 minutes. Check Falco's log for what, the k8s audit log for who."
+        - alert: AdmissionDenied
+          expr: |
+            sum by (resource_namespace, resource_kind) (increase(kyverno_admission_requests_total{request_allowed="false"}[10m])) > 0
+            or
+            sum by (resource_namespace, resource_kind) (kyverno_admission_requests_total{request_allowed="false"}
+              unless kyverno_admission_requests_total{request_allowed="false"} offset 10m) > 0
+          labels: {severity: warning}
+          annotations:
+            summary: "Kyverno denied a {{ $labels.resource_kind }} in {{ $labels.resource_namespace }}"
+            description: "Usually an unsigned or wrongly signed image: a bad deploy, or someone trying to run unapproved code."
+        - alert: CertificateExpiringSoon
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 14 * 86400
+          for: 1h
+          labels: {severity: warning}
+          annotations:
+            summary: "Certificate {{ $labels.exported_namespace }}/{{ $labels.name }} expires in under 14 days"
+            description: "cert-manager renews 30 days before expiry, so this means renewal has been failing."
+        - alert: CertificateNotReady
+          expr: certmanager_certificate_ready_status{condition="True"} == 0
+          for: 15m
+          labels: {severity: warning}
+          annotations:
+            summary: "Certificate {{ $labels.exported_namespace }}/{{ $labels.name }} not Ready for 15 minutes"
+        - alert: ExternalSecretNotSynced
+          expr: externalsecret_status_condition{condition="Ready", status="True"} == 0
+          for: 10m
+          labels: {severity: warning}
+          annotations:
+            summary: "ExternalSecret {{ $labels.exported_namespace }}/{{ $labels.name }} not synced for 10 minutes"
+            description: "The app or Grafana can't refresh its password from Parameter Store (IAM, IMDS guard, or a missing parameter)."
