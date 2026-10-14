@@ -34,6 +34,12 @@ kubectl apply -f gatekeeper/expansion.yaml
 kubectl apply -f gatekeeper/constraints.yaml
 kubectl apply -f kyverno/
 kubectl apply -f external-secrets/
+echo "   monitoring: Grafana and Alertmanager secrets from Parameter Store, then the stack"
+kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -f monitoring/grafana-admin.yaml -f monitoring/alertmanager-config.yaml
+until kubectl -n monitoring get secret grafana-admin alertmanager-config > /dev/null 2>&1; do sleep 5; done
+install monitoring   monitoring         prometheus-community/kube-prometheus-stack 92.3.1
+kubectl apply -f monitoring/monitors.yaml -f monitoring/security-alerts.yaml
 
 echo "== 4. Hand the app over to ArgoCD"
 kubectl apply -f ../apps/project.yaml -f ../apps/secureshop-dev.yaml
