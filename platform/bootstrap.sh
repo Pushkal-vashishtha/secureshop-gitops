@@ -21,6 +21,7 @@ install gatekeeper   gatekeeper-system  gatekeeper/gatekeeper  3.23.1
 install kyverno      kyverno            kyverno/kyverno        3.9.1
 install external-secrets external-secrets external-secrets/external-secrets 2.12.0
 install falco        falco              falcosecurity/falco    9.2.0
+install fluent-bit   logging            fluent/fluent-bit      0.58.3
 
 echo "== 3. Platform configuration and policies"
 kubectl apply -f imds-guard.yaml
