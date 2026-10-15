@@ -59,6 +59,10 @@ config:
         Name     grep
         Match    apps.*
         Exclude  log kube-probe
+    [FILTER]
+        Name     grep
+        Match    apps.*
+        Exclude  log ^INFO:\s+10\.42\.0\.1:\d+ - "GET /healthz
   outputs: |
     [OUTPUT]
         Name               cloudwatch_logs
