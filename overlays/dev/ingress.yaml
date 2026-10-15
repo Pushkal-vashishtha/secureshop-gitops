@@ -11,10 +11,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - secureshop.13-126-7-171.sslip.io
+        - secureshop.13-127-245-161.sslip.io
       secretName: web-tls
   rules:
-    - host: secureshop.13-126-7-171.sslip.io
+    - host: secureshop.13-127-245-161.sslip.io
       http:
         paths:
           - path: /
