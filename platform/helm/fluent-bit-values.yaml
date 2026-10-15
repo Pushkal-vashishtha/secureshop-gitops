@@ -1,0 +1,85 @@
+# Fluent Bit: ships Falco alerts, the Kubernetes audit log and app logs to CloudWatch.
+# Reads node files READ-ONLY (a shipper must not be able to alter evidence) and needs
+# no Kubernetes API access. AWS credentials: the box's role via IMDS (append-only).
+rbac:
+  create: false
+daemonSetVolumes:
+  - name: varlog
+    hostPath: {path: /var/log}
+  - name: k3saudit
+    hostPath: {path: /var/lib/rancher/k3s/server/logs}
+  - name: state
+    hostPath: {path: /var/lib/fluent-bit, type: DirectoryOrCreate}
+daemonSetVolumeMounts:
+  - {name: varlog, mountPath: /var/log, readOnly: true}
+  - {name: k3saudit, mountPath: /k3s-audit, readOnly: true}
+  - {name: state, mountPath: /state}
+resources:
+  requests: {cpu: 20m, memory: 32Mi}
+  limits: {memory: 128Mi}
+config:
+  service: |
+    [SERVICE]
+        Daemon        Off
+        Flush         5
+        Log_Level     warn
+        Parsers_File  /fluent-bit/etc/parsers.conf
+        HTTP_Server   On
+        HTTP_Listen   0.0.0.0
+        HTTP_Port     2020
+        Health_Check  On
+  inputs: |
+    [INPUT]
+        Name              tail
+        Tag               falco
+        Path              /var/log/containers/falco-*_falco_falco-*.log
+        multiline.parser  cri
+        DB                /state/falco.db
+        Mem_Buf_Limit     5MB
+    [INPUT]
+        Name              tail
+        Tag               audit
+        Path              /k3s-audit/audit.log
+        Parser            json
+        DB                /state/audit.db
+        Mem_Buf_Limit     10MB
+    [INPUT]
+        Name              tail
+        Tag               apps.*
+        Path              /var/log/containers/*_web_web-*.log,/var/log/containers/*_app_api-*.log
+        multiline.parser  cri
+        DB                /state/apps.db
+        Mem_Buf_Limit     5MB
+  filters: |
+    [FILTER]
+        Name   grep
+        Match  falco
+        Regex  log ^\{
+    [FILTER]
+        Name     grep
+        Match    apps.*
+        Exclude  log kube-probe
+  outputs: |
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              falco
+        region             ap-south-1
+        log_group_name     /secureshop/dev/falco
+        log_stream_prefix  node-
+        log_key            log
+        auto_create_group  false
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              audit
+        region             ap-south-1
+        log_group_name     /secureshop/dev/audit
+        log_stream_prefix  node-
+        auto_create_group  false
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              apps.*
+        region             ap-south-1
+        log_group_name     /secureshop/dev/apps
+        log_stream_prefix  node-
+        log_key            log
+        auto_create_group  false
