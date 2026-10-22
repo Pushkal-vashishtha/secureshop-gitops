@@ -27,5 +27,34 @@
         "controlID": "C-0211"
       }
     ]
+  },
+  {
+    "name": "c0236-signatures-verified-by-kyverno",
+    "policyType": "postureExceptionPolicy",
+    "actions": [
+      "alertOnly"
+    ],
+    "reason": "Image signatures ARE verified, by the Kyverno ClusterPolicy verify-secureshop-signatures at admission (keyless Cosign, ci.yml@refs/heads/main), not by the annotation C-0236 inspects statically. Proven Day 12: an unsigned image from our own registry is denied at admission. Exception covers detection-method mismatch only, not the control's intent.",
+    "resources": [
+      {
+        "designatorType": "Attributes",
+        "attributes": {
+          "kind": "Deployment",
+          "name": "web"
+        }
+      },
+      {
+        "designatorType": "Attributes",
+        "attributes": {
+          "kind": "Deployment",
+          "name": "api"
+        }
+      }
+    ],
+    "posturePolicies": [
+      {
+        "controlID": "C-0236"
+      }
+    ]
   }
 ]
